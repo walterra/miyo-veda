@@ -1,6 +1,6 @@
 import fetch from 'cross-fetch';
 
-import {miyoIP, apiKey} from './_settings';
+import { miyoIP, apiKey } from '../../_settings';
 
 export async function get(req, res) {
   // circuit/all

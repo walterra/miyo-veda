@@ -2,12 +2,6 @@
   import Table from "sveltestrap/src/Table.svelte";
 	import Progress from 'sveltestrap/src/Progress.svelte';
 
-  // const tableHeading = ["#", "First Name", "Last-Name", "Username"];
-  // const tableData = [
-  //   { SNo: "1", firstName: "Mark", lastName: "Otto", userName: "@mdo" },
-  //   { SNo: "2", firstName: "Jacob", lastName: "Thornton", userName: "@fat" },
-  //   { SNo: "3", firstName: "Larry", lastName: "the Bird", userName: "@twitter" }
-  // ];
   export let tableHeading;
   export let tableData;
 </script>
@@ -27,10 +21,13 @@
         {#each data as d}
         <td>
           {#if Array.isArray(d)}
-            <Progress multi>
-              <Progress bar color="transparent" value={d[0]} />
-              <Progress bar value={d[1] - d[0]}>{d[0]} - {d[1]}</Progress>
-            </Progress>
+            <div style="float:left; width: 60px">{d[0]}-{d[1]}</div>
+            <div style="padding-top: 5px">
+              <Progress multi>
+                <Progress bar color="transparent" value={d[0]} />
+                <Progress bar value={d[1] - d[0]} />
+              </Progress>
+            </div>
           {:else}
             {d}
           {/if}

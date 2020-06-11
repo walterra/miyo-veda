@@ -13,7 +13,7 @@
   let isPageOpen = false;
   let isAuthenticationOpen = false;
   let isErrorOpen = false;
-  let activeLink = "Dashboard";
+  let activeLink = "MIYO Status";
   let footerName = "miyo veda";
   let footerText = "Logged in as:";
 
@@ -55,7 +55,7 @@
           on:press={() => {
             theme = 'dark';
           }}
-          text="Dashboard"
+          text="MIYO Status"
           class={segment === '.' || segment === undefined ? 'active' : ''}
           leftIcon
           href=".">
