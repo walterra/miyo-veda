@@ -14,7 +14,7 @@
   let isAuthenticationOpen = false;
   let isErrorOpen = false;
   let activeLink = "Dashboard";
-  let footerName = "SB Admin Svelte";
+  let footerName = "miyo veda";
   let footerText = "Logged in as:";
 
   const updateActiveLink = linkName => (activeLink = linkName);

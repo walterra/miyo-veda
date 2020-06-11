@@ -9,7 +9,7 @@
 
   let theme = "dark";
   let color = "dark";
-  let title = "SB Admin Svelte";
+  let title = "miyo veda";
 </script>
 
 <svelte:head>
