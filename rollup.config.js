@@ -1,38 +1,103 @@
 import resolve from '@rollup/plugin-node-resolve';
+import replace from '@rollup/plugin-replace';
 import commonjs from '@rollup/plugin-commonjs';
-import { terser } from 'rollup-plugin-terser';
-import * as fs from 'fs';
 import svelte from 'rollup-plugin-svelte';
+import babel from '@rollup/plugin-babel';
+import { terser } from 'rollup-plugin-terser';
+import config from 'sapper/config/rollup.js';
+import pkg from './package.json';
 
-// `npm run build` -> `production` is true
-// `npm run dev` -> `production` is false
-const production = !process.env.ROLLUP_WATCH;
+const mode = process.env.NODE_ENV;
+const dev = mode === 'development';
+const legacy = !!process.env.SAPPER_LEGACY_BUILD;
+
+const onwarn = (warning, onwarn) => (warning.code === 'CIRCULAR_DEPENDENCY' && /[/\\]@sapper[/\\]/.test(warning.message)) || onwarn(warning);
 
 export default {
-	input: 'src/main.js',
-	output: {
-		file: 'public/bundle.js',
-		format: 'iife', // immediately-invoked function expression — suitable for <script> tags
-		sourcemap: true
+	client: {
+		input: config.client.input(),
+		output: config.client.output(),
+		plugins: [
+			replace({
+				'process.browser': true,
+				'process.env.NODE_ENV': JSON.stringify(mode)
+			}),
+			svelte({
+				dev,
+				hydratable: true,
+				emitCss: true
+			}),
+			resolve({
+				browser: true,
+				dedupe: ['svelte']
+			}),
+			commonjs(),
+
+			legacy && babel({
+				extensions: ['.js', '.mjs', '.html', '.svelte'],
+				babelHelpers: 'runtime',
+				exclude: ['node_modules/@babel/**'],
+				presets: [
+					['@babel/preset-env', {
+						targets: '> 0.25%, not dead'
+					}]
+				],
+				plugins: [
+					'@babel/plugin-syntax-dynamic-import',
+					['@babel/plugin-transform-runtime', {
+						useESModules: true
+					}]
+				]
+			}),
+
+			!dev && terser({
+				module: true
+			})
+		],
+
+		preserveEntrySignatures: false,
+		onwarn,
 	},
-	plugins: [
-		resolve(), // tells Rollup how to find date-fns in node_modules
-		commonjs(), // converts date-fns to ES modules
-		production && terser(), // minify, but only in production
-		svelte({
-      // Emit CSS as "files" for other plugins to process
-      emitCss: true,
 
-      // Extract CSS into a separate file (recommended).
-      // See note below
-      css: function (css) {
-        console.log(css.code); // the concatenated CSS
-        console.log(css.map); // a sourcemap
+	server: {
+		input: config.server.input(),
+		output: config.server.output(),
+		plugins: [
+			replace({
+				'process.browser': false,
+				'process.env.NODE_ENV': JSON.stringify(mode)
+			}),
+			svelte({
+				generate: 'ssr',
+				dev
+			}),
+			resolve({
+				dedupe: ['svelte']
+			}),
+			commonjs()
+		],
+		external: Object.keys(pkg.dependencies).concat(
+			require('module').builtinModules || Object.keys(process.binding('natives'))
+		),
 
-        // creates `main.css` and `main.css.map` — pass `false`
-        // as the second argument if you don't want the sourcemap
-        css.write('public/main.css');
-      },
-    })
-	]
+		preserveEntrySignatures: 'strict',
+		onwarn,
+	},
+
+	serviceworker: {
+		input: config.serviceworker.input(),
+		output: config.serviceworker.output(),
+		plugins: [
+			resolve(),
+			replace({
+				'process.browser': true,
+				'process.env.NODE_ENV': JSON.stringify(mode)
+			}),
+			commonjs(),
+			!dev && terser()
+		],
+
+		preserveEntrySignatures: false,
+		onwarn,
+	}
 };
