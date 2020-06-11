@@ -1,3 +1,9 @@
+<script>
+  import Button from 'sveltestrap/src/Button.svelte';
+  import Col from 'sveltestrap/src/Col.svelte';
+  import Row from 'sveltestrap/src/Row.svelte';
+</script>
+
 <style>
 	h1, p {
 		text-align: center;
@@ -29,3 +35,9 @@
 <h1>miyo-veda</h1>
 
 <p>Here be dragons ...</p>
+
+<Row>
+  <Col>
+    <Button color="primary" outline>Hello World!</Button>
+  </Col>
+</Row>
