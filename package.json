@@ -36,7 +36,7 @@
   "dependencies": {
     "chart.js": "^2.9.3",
     "compression": "^1.7.1",
-    "cross-fetch": "^3.0.4",
+    "cross-fetch": "^3.1.5",
     "polka": "next",
     "sirv": "^0.4.0",
     "sveltestrap": "^3.3.2"
